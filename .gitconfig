@@ -1,0 +1,2 @@
+[alias]
+	br = "!f() { prs=\"$(gh pr list --state open --json headRefName,url --limit 100 --jq '.[] | [.headRefName, .url] | @tsv' 2>/dev/null)\"; git branch \"$@\" | while IFS= read -r line; do marker=\"${line:0:1}\"; branch=\"${line#??}\"; url=\"$(printf '%s\\n' \"$prs\" | awk -F '\\t' -v b=\"$branch\" '$1 == b { print $2; exit }')\"; if [ -n \"$url\" ]; then printf '%s %-60s %s\\n' \"$marker\" \"$branch\" \"$url\"; else printf '%s %s\\n' \"$marker\" \"$branch\"; fi; done; }; f"
