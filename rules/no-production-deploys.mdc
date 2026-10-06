@@ -1,0 +1,10 @@
+---
+description: Never deploy to a production environment through an agent
+alwaysApply: true
+---
+
+# No production deploys
+
+- Never run a deployment command that targets production from an agent session.
+- If the user asks for a production deployment, provide the exact command for the user to run themselves.
+- Non-production environments are allowed when the user explicitly requests them.

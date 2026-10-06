@@ -1,0 +1,16 @@
+---
+description: Keep all worktrees under [agent config path removed] prefer Cursor's native worktrees
+alwaysApply: true
+---
+
+# Git Worktrees
+
+For any task that writes or changes code, always work in a Cursor-managed worktree. Never edit the current checkout, including `master`, `main`, or another user's working branch. Read-only investigation may use the current checkout.
+
+For any repo (including background or parallel agent work), rely on Cursor's native Worktrees feature for isolated checkouts. Native worktrees are created at launch time - via the Agents Window "run in worktree" option, the `/worktree` skill, or the CLI `-w` flag - and live under `[agent config path removed]`.
+
+The location is the hard constraint. Do NOT create a worktree as a sibling directory (e.g. `[company path removed]`) or inside the repo. Worktrees in those places clutter the filesystem and can be picked up by MSBuild globs / Docker build context / IDE language servers.
+
+If a code-change task is not already running inside a Cursor-managed worktree, create one before editing. You may run `git worktree add` yourself when necessary, as long as the new tree lives at `[agent config path removed]`. Call `move_agent_to_root` on that path immediately afterward, before making any changes.
+
+Do not use the current checkout as a fallback when a worktree is unavailable. Pause and ask the user to relaunch in a worktree or approve creating one. Remove a self-created worktree with `git worktree remove` once the work is done.

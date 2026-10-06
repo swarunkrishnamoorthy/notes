@@ -1,0 +1,42 @@
+---
+description: Keep code changes minimal, scoped, and production-grade.
+alwaysApply: true
+---
+
+# Code Discipline
+
+Apply to every code change you write, edit, or review.
+
+## Change only what's asked
+
+Touch only the code needed for the request. Do not refactor nearby code that "could be better", add types or docstrings to untouched code, rename variables you did not introduce, or reformat imports and style outside your change. If you spot existing problems, say so instead of silently fixing them.
+
+## No speculative code
+
+Build for the current requirement, not a hypothetical future. Do not add error handling for states that cannot occur, abstractions for a single caller, unrequested flags, config, or extension points, helpers for one-time operations, or back-compat shims when you can change the code directly. Three similar lines beat a premature abstraction.
+
+## Match the local style
+
+Read the files before modifying them, then follow what is already there: naming conventions, file organization, and the existing approach to similar operations. Library and architectural precedent is covered separately by `[company]-code-pattern-precedent`.
+
+## Delete completely
+
+Remove code rather than neutralize it. No commenting out, no `_`-prefixed unused variables, no `// removed` or `// deprecated` markers, no re-exports for backwards compatibility, no empty blocks or placeholder comments.
+
+## Comment discipline
+
+Covered separately by `comment-discipline`.
+
+## Clarity over cleverness
+
+Prefer explicit logic to compact one-liners, named variables to inline expressions, early returns to deep nesting, and simple conditionals to nested ternaries. If a reader has to stop and parse it, rewrite it.
+
+## Validate at boundaries
+
+Validate where untrusted data enters: user input, API responses, file I/O, environment variables. Trust internal code and framework guarantees. Do not null-check values that cannot be null, wrap internal calls in try/catch "just in case", validate arguments from your own codebase, or add fallbacks for values the type system already guarantees.
+
+## Verify before you finish
+
+Run the existing test suite rather than assuming it passes, and fix what you broke. With no test suite, confirm the code at least compiles or parses.
+
+For before/after examples of each principle, read `[agent config path removed]`.

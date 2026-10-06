@@ -1,0 +1,64 @@
+---
+description: Plain language inside the normal structure - keep bullets, numbered findings and headers, but write each line for a reader who has not opened the codebase
+alwaysApply: true
+---
+
+# Explain Plainly
+
+This rule governs word choice, not structure. Everything in `writing-style` stands unchanged: keep the bullets, keep the numbered findings, keep the headers and tables. The failure this rule fixes is a line that is correctly structured and still unreadable, because it was written for an auditor who already knows the codebase.
+
+## Write each line for someone who has not opened the repo
+
+- **Name things by what they do, not what they are called.** Prefer "this table automatically deletes old copies of rows" over `ReplacingMergeTree`, and "when the transaction happened, not when it reached the database" over `created_utc` versus `ingested_utc`. Use an identifier when the reader will search or type it, or when it is the thing under discussion, and gloss it in plain words the first time it appears.
+- **Lead with the consequence, then the mechanism if it is needed.** Say what the reader would observe before explaining why. Bit layouts, merge algorithms, and engine internals earn their place only when they change a decision.
+- **One idea per sentence.** Density usually comes from stacking three concepts into one clause chain, not from length. Two plain sentences beat one packed one.
+- **Use a concrete case with real numbers instead of an abstract label.** "The card says 12,500 and the rows underneath add up to 11,500" does the work that "cross-query drift" only gestures at.
+- **Restate the reader's own idea in their words and credit it before correcting it.** "Your instinct is to send a timestamp with both calls. That's the right idea, but there's nothing to point it at."
+- **Keep sentences short at the turn.** "Both answers are correct. The screen is still wrong."
+- **One clause of acknowledgement, maximum.** "You're right, that was dense." Then the answer. No apology paragraph, no recap of the mistake.
+- **Never fix density by compressing.** Fragments, abbreviations, arrow chains, and dropped articles read as denser, not plainer. Rewrite in full sentences with the terms spelled out.
+
+## Example
+
+The structure is identical in both. Only the language changes.
+
+```text
+BAD
+- 🔴 3. `virtual_transaction_fact` has no visibility-time column, so a
+  `created_utc <= W` predicate cannot bound ingestion and the `argMax`
+  winner drifts across calls.
+
+GOOD
+- **3. Nothing records when a row became visible.** The only time stored on
+  each row is when the transaction happened, which can be hours before it
+  reached the database. So a timestamp filter cannot pin what the two
+  queries see, and they can still disagree.
+```
+
+## Keep the auditable detail, put it where it belongs
+
+Line numbers, file paths, exact identifiers, and citations belong in the doc, canvas, PR, or report, where someone can check the work. The chat line names the consequence and points at that artifact. Simplifying in chat is never a reason to skip writing the exact version.
+
+## Avoid these vague terms
+
+Use a concrete description instead of these words when they are not required technical terms:
+
+- `seam`: say "optional wrapper" or describe what callers can provide.
+- `pin`: say "use the same timestamp," "fix the version," or "keep in memory," depending on the meaning.
+- `shape`: say "fields and behavior," "interface," "request format," or "parameters and return values."
+- `scaffold`: say "starter code." Use "template" only for a known template.
+- `orchestration`: say "coordination" or "code that calls these services in order."
+- `holistic`: name the areas covered.
+- `resilient`: describe what continues after which failure.
+- `cohesive`: say "keeps related logic together" or "uses one consistent rule."
+- `in flight`: say "running," "started but unfinished," or "awaiting deployment."
+- `heartbeat`: say "periodic status check" unless it means a literal health signal.
+- `right-size`: say "choose the required capacity" or "set capacity based on measured load."
+- `gate`: say "required check," "merge requirement," or name the specific check.
+- `clamp`: say "limit to a range," "keep between X and Y," "cap at X," or "restrict," depending on the meaning.
+
+Keep these terms when they are required technical terms or identifiers. Do not replace literal dependency pinning, memory pinning, health heartbeats, or named templates.
+
+## The test
+
+Read it back as someone who has never seen this code. Does any line need an identifier to parse? Does it name a consequence they would actually notice? If a sentence has to be read twice, rewrite it.

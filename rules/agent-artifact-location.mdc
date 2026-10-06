@@ -1,0 +1,18 @@
+---
+description: Put generated artifacts and scratch files under ~/agent-artifacts, never loose in $HOME
+alwaysApply: true
+---
+
+# Where To Put Generated Artifacts
+
+When you create a file that is NOT part of a code change inside a project workspace, and there is no obvious project directory for it, write it under `~/agent-artifacts/` rather than the home directory. This covers reports, analyses, plans, design docs, exports, screenshots, diagrams, downloaded content, generated data, and one-off or throwaway scripts.
+
+Rules:
+
+- Never drop loose files directly in `$HOME`, `~/Desktop`, `~/Documents`, `[agent config path removed]`, or `[agent config path removed]`. These are for the user's own files and tool config, not agent output.
+- Organize inside `~/agent-artifacts/` using a dated or task-named subfolder, e.g. `~/agent-artifacts/2026-08-10-earnings-analysis/` or `~/agent-artifacts/<topic>/`. Do not pile everything in the top level.
+- When you are working inside a real project workspace, keep artifacts in that project following its conventions (a `scratch/`, `docs/`, or wherever the repo already puts such files). Use `~/agent-artifacts/` only when the file is personal/cross-project or there is no project to hold it.
+- Temporary scripts you write just to run a task also belong under `~/agent-artifacts/` (or a project scratch dir), not in `$HOME` or a tool config dir.
+- After creating an artifact, tell the user the full path.
+
+This complements the home-workspace guidance: prefer moving into a project for project-scoped work; when work genuinely has no project home, land the output in `~/agent-artifacts/` instead of cluttering `$HOME`.

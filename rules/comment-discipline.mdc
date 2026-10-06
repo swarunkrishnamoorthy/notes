@@ -1,0 +1,79 @@
+---
+description: When to write a code comment, what to ban, and the review pass over comments before pushing
+alwaysApply: true
+---
+
+# Comment Discipline
+
+The single home for comment rules. The two tests govern both writing a comment and reviewing it before a push.
+
+## The two tests
+
+Every comment must pass both, at the moment you write it and again before the push.
+
+1. **Recoverable?** Could a competent reader recover this by reading the code itself? Yes means delete it. No means keep it, reworded to the shortest plain-English line.
+2. **Necessary?** For the survivors, does a future reader actually need this to work on the code safely? Keep only load-bearing non-obvious information: units, boundary inclusivity, what null or empty means, ownership and lifetime, invariants, business rules, and the durable reason a workaround exists. True but incidental trivia goes.
+
+## Writing
+
+- Default to no comment. Write one only where the code cannot speak for itself, and explain why rather than what. Never narrate what the code does.
+- Keep them short. One plain-English line wherever possible.
+- No XML doc tags (`<summary>`, `<param>`, `<returns>`, `<remarks>`) unless the repo's workflows demand them. Assume a human reader, not a doc generator.
+- No per-parameter comments unless the parameter has truly non-obvious semantics.
+- No AI attribution, decorative banners, section dividers, author or date stamps, or comments that restate the code or echo an identifier's own words.
+- No TODOs unless I asked for them.
+- Never leave commented-out code. Delete it.
+- Put the comment on its own line above what it describes, at matching indentation. Move end-of-line comments up, except where one annotates a single entry in a list, enum, or literal.
+
+For before/after examples, read `[agent config path removed]`.
+
+## No transition narration
+
+A comment describes the state of the code, never how it got there. Banned outright:
+
+- Change markers: `NEW:`, `UPDATED:`, `FIXED:`, `WAS:`, `// added in v2`, `// phase 1`.
+- Transition verbs applied to the code: "now uses", "no longer", "changed to", "switched to", "renamed", "moved", "replaced", "refactored", "reverted", "migrated", "now handles", "added", "removed".
+- Vintage and hedging: "previously", "for now", "at the moment", "currently only supports", "the old implementation", "the previous approach".
+- Process history standing in for a reason: ticket, PR, phase, or gate references such as "ENG-1234" or "moved verbatim from X".
+- Dangling comparisons to code that is not in the file, such as "faster than the old version".
+
+The fix depends on whether a real reason is buried inside:
+
+- Reason present: rewrite it as a statement about the code as it stands, attributed to the durable cause (an upstream issue, a protocol, a hardware limit, a business rule).
+- No reason: delete it.
+
+```text
+BAD   // updated to poll every 30s because the old interval missed spikes
+GOOD  // the UPS reports at 30s intervals; polling slower aliases the spikes
+```
+
+The check: is the comment true of the file to a reader who has never seen the previous version? If deleting all git history would leave it confusing or orphaned, rewrite it.
+
+## Keep unconditionally
+
+Linter, formatter, compiler, coverage, and generated-code directives. Any comment holding open an otherwise empty or invalid block. TODO and FIXME markers I asked for.
+
+## Review before pushing
+
+Before pushing any branch that is or will become a PR, apply the two tests to every comment added or modified in the unpushed commits.
+
+Scope is the unpushed diff only. Comments that predate it stay untouched, because editing them turns a focused diff into a review problem. Go repository-wide only when I ask for it explicitly.
+
+```bash
+git diff @{upstream}..HEAD      # branch already tracks a remote
+git diff origin/master...HEAD   # branch never pushed; use the repo's default branch
+```
+
+Include uncommitted work when it is going out in the same push.
+
+### Safety
+
+- Change comments only. Executable code stays byte-identical: confirm the cleanup diff touches nothing but comment lines, then re-run the build or tests.
+- Leave formatting alone except where a comment moved, and regenerate generated files rather than hand-editing them.
+- If a comment can only be corrected by changing code, stop and tell me instead of folding it in.
+- Never delete a comment carrying a reason while the code it explains survives.
+- Commit the cleanup separately. Do not amend unless I ask.
+
+### Report
+
+Before pushing, state the counts: deleted, reworded, kept. Name anything kept that looks redundant, and why.

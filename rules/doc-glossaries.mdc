@@ -1,0 +1,70 @@
+---
+description: After creating a Markdown file, ask whether to add a hover-glossary-enabled version
+alwaysApply: true
+---
+
+# Ask before adding hover glossaries
+
+Whenever you create or substantially write a `.md` file, ask the user if they want a hover-glossary-enabled version. Do not add a glossary block until they say yes.
+
+- Ask after the file is written, in the same reply. One short question is enough.
+- If you wrote several `.md` files in the same turn, ask once for all of them.
+- If they say yes, append a `<!-- glossary -->` block to the same file(s). Do not create a parallel copy unless they ask for one.
+- If they say no, leave the file as-is and do not ask again for that file in this conversation.
+
+Skip the question when:
+
+- The file already has a `<!-- glossary` block
+- The user already answered for this file in this conversation
+- The change is a trivial edit to existing markdown (typo, changelog bump, one-line README tweak)
+- The file is `.mdc` (Cursor rules), not `.md`
+
+Hover glossaries are rendered by markdown-hover-glossary (`[private path removed]`). The block is an HTML comment, so it stays invisible in GitHub and editors.
+
+If they say yes, add an entry when:
+
+- A non-trivial technical term or abbreviation appears (define it in plain English).
+- You state an observation, claim, or metric (put a concrete real example in `example`).
+- A table names a metric/concept - one entry per row.
+- The doc names an endpoint, RPC, API call, or other callable operation (see "Endpoint entries" below).
+
+Skip common words, self-explanatory headings, and terms already defined inline.
+
+Append ONE block at the very bottom of the file:
+
+```markdown
+<!-- glossary
+- term: State assertions per test
+  definition: Assertions that check observable state (return values, fields) rather than interactions.
+  example: A test with assertEquals(3, cart.size()) and assertTrue(cart.contains(x)) has 2 state assertions.
+  aliases: [state assertion]
+- term: Wildcard matcher
+  definition: An argument matcher like any() that accepts any value instead of a specific one.
+  example: verify(repo).save(any()) passes for any argument, so it can mask wrong-value bugs.
+-->
+```
+
+Block rules:
+
+- Fields: `term` (required), `definition` (required), `example` (recommended), `aliases` (list), `link` (URL).
+- Never write `-->` inside a value (it closes the comment early). Use the → arrow character instead.
+- Quote or use `|` for values that start with a backtick (YAML).
+- 1-2 sentence definitions for concepts; examples must be concrete and specific to the doc. Endpoint entries follow the longer format below.
+- One block per file. Matching is case-insensitive, whole-word, longest-phrase-first.
+- To view: in `[private path removed]` run `npm run serve`, then paste the file path.
+
+## Endpoint entries
+
+Every endpoint the doc refers to gets its own entry that explains what goes in and what comes back, in words. Never paste a proto, schema, or JSON.
+
+- **Name the endpoint in the doc body** by its exact name (in backticks) so the hover matches. A sentence like "it asks POPS for a plan" is not enough; write "it asks POPS for a plan (`GeneratePayoutPlan`)". Add aliases for any short names the doc uses.
+- **`term`** is the exact endpoint name.
+- **`definition`** uses a `|` block with three parts:
+  - One plain sentence on what the call does and who calls it.
+  - **In:** the inputs, in plain words. List the meaningful fields, not every field.
+  - **Out:** what is returned, including what a failure looks like (an error, a partial result, a status).
+- **`example`** uses a `|` block with a real-looking **In** and **Out** for one running scenario. Use realistic ids, names, and amounts (for example, UUIDs and "R$60", not `foo` or `id1`).
+- **Use one running scenario for the whole doc**, so a reader can follow the same data through every endpoint. State it in the first endpoint example and reuse it.
+- **Write it the way a person would say it.** "We pass in (recipient1, value1) and get back (recipient1, payout plan amount, reason)" is the target level of detail.
+- Say plainly when the call is proposed, deprecated, or not implemented yet, so the reader does not assume it exists.
+- Label inputs or outputs you inferred and did not verify in the code or contract.
