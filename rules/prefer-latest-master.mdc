@@ -1,0 +1,12 @@
+---
+description: Pull latest master before answering off-branch questions
+alwaysApply: true
+---
+
+# Avoid Acting on Stale Code
+
+When a question is not about the current branch (or the PR on the current branch) of a repo, pull the latest `master`/`main` of that repo before answering, so reasoning is based on up-to-date code.
+
+- Fetch and update the default branch first (e.g. `git fetch origin` then read from `origin/master`/`origin/main`), without altering the user's checked-out branch.
+- If the question is about the current branch or its PR, use the working tree as-is.
+- If pulling latest isn't possible (no network, not a clone, etc.), say so and note the answer may reflect stale code.

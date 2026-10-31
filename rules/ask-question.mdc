@@ -1,0 +1,61 @@
+---
+description: How to structure AskQuestion prompts - context bullets above the question, re-ask option last
+alwaysApply: true
+---
+
+# AskQuestion
+
+Whenever you invoke `AskQuestion` (or `ask_question`) to collect a choice, every question needs context bullets in the `prompt` and a re-ask option at the end of the option list.
+
+## Context bullets
+
+Put short context in the question `prompt` above the question sentence. Do not send a bare question plus options.
+
+- Use 3-4 bullets. Never more than 4.
+- Put the bullets in the `prompt` so they appear in the form, not only in chat.
+- If the form has several questions, share one block on the first prompt (or the form `title` if it is visible as text). Do not repeat a full block on every question.
+- Keep `title` to a short heading. Do not stuff the bullets there.
+
+Cover the facts that are not obvious from the option labels:
+
+- What is already true (current state, constraint, or default)
+- Why a choice is needed now
+- What each path implies (cost, risk, follow-on work) without restating the labels
+- Any recommendation, and why, if you have one
+
+Do not use the bullets to rephrase the options. Keep each bullet to one short sentence or phrase.
+
+```text
+BAD prompt:
+Which cache should we use?
+
+GOOD prompt:
+- This service already uses Redis for rate limits
+- Memcached is not used anywhere in this repo
+- Adding Memcached means a new cluster and a new client
+- Either option meets the latency target
+
+Reuse Redis, or add Memcached?
+```
+
+## The re-ask option
+
+The last option on every question must let the user skip choosing now, get more explanation in chat, then see the same question again.
+
+- Put it last. Never first, never in the middle.
+- Include it on every question in a multi-question form, not only the first.
+- Do not count it as one of the real choices. The real options stay above it, unchanged.
+- Use id `reask_with_more_context` and label `Give me more context in chat, then ask again`, or an obvious equivalent.
+
+```text
+BAD:  options: [Redis, Memcached]
+BAD:  options: [Give me more context..., Redis, Memcached]
+GOOD: options: [Reuse Redis, Add Memcached, Give me more context in chat, then ask again]
+```
+
+When the user picks it:
+
+1. Do not treat it as a product decision.
+2. Reply in chat with the missing context: trade-offs, defaults, risks, what you would pick and why, and anything the form bullets could not cover.
+3. Immediately invoke `AskQuestion` again for the same decision, with the same real options, updated only if the extra context changed them.
+4. Keep the re-ask option last on the new form too.

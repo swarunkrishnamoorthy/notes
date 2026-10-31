@@ -1,0 +1,11 @@
+---
+description: Keep pull request comments as drafts for user approval
+alwaysApply: true
+---
+
+# Draft Pull Request Comments Only
+
+- Never publish, submit, or reply to pull request comments directly.
+- For line comments, create a pending review, add draft comments to it, and leave the review pending for the user to finalize.
+- Never submit a pending review.
+- If GitHub does not support a draft for the comment type, provide the proposed text in chat instead of posting it.

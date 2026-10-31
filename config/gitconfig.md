@@ -1,0 +1,33 @@
+# Portable Git configuration
+
+```ini
+[credential]
+    helper = /usr/local/share/gcm-core/git-credential-manager
+
+[filter "lfs"]
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+    required = true
+
+[push]
+    autoSetupRemote = true
+    default = current
+
+[pull]
+    rebase = true
+
+[help]
+    autocorrect = 20
+
+[alias]
+    amend = commit --amend --no-edit
+    st = status
+    ll = log --oneline
+    last = log -1 HEAD --stat
+    cm = commit -m
+    dv = difftool -t vimdiff -y
+    d = diff
+    co = checkout
+    topls = show --name-only --oneline HEAD
+```

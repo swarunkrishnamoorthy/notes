@@ -1,0 +1,34 @@
+---
+description: Quantitative reporting rules - human-friendly rounding, significant digits, unit consistency, and auditable precision
+alwaysApply: true
+---
+
+# Human-Friendly Numbers and Quantitative Reporting
+
+Always present numbers in readable, human-friendly form by default. Do not emit long raw figures or excessive decimal places unless exact precision is strictly required.
+
+## The 5 Core Reporting Rules
+
+1. **Default to 2-3 significant digits.** Use `K`, `M`, and `B` suffixes for large values, and round counts and rates to 2-3 meaningful digits (for example, `3.7M` instead of `3,672,123`, `14K` instead of `14,118`, and `3.7K/s` instead of `3,694/s`).
+2. **Cap percentages at 1-2 decimals.** Report rates and shares with at most 1 or 2 decimal places (for example, `0.07%` instead of `0.067832%`, or `99.8%` instead of `99.7972%`).
+3. **Pair critical percentages with absolute volume.** Always provide the denominator or absolute count when reporting a rate or drop, so the reader sees real scale (for example, `0.07% failure rate (2.6K out of 3.7M requests)`).
+4. **Maintain consistent units in comparisons.** Keep identical units and scales when comparing values in the same thought (compare `ms` to `ms`, `M` to `M`). Do not mix `450 ms` with `1.2 s`, or `3.7M` with `920,000`.
+5. **Reserve exact precision for auditable records.** Keep full precision only where strictly necessary:
+   - Database IDs, trace IDs, hash values, commit SHAs, timestamps, and config flags.
+   - Financial ledgers, billing line items, or exact monetary transfers.
+   - High-nines availability where trailing digits alter the SLO state (such as `99.993%` vs `99.990%`).
+   - Deep reference tables, raw logs, or when the user explicitly requests exact figures.
+
+## Examples
+
+```text
+BAD
+- Total requests: 3,672,123 with an error rate of 0.067832%
+- Instance A took 450 ms while Instance B took 1.2 s
+- TRS processed 3.7M requests while TRA processed 920,000
+
+GOOD
+- Total requests: 3.7M with an error rate of 0.07% (2.6K out of 3.7M)
+- Instance A took 450 ms while Instance B took 1,200 ms
+- TRS processed 3.7M requests while TRA processed 0.9M
+```
